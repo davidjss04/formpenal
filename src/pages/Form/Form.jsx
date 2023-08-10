@@ -1,37 +1,150 @@
-/* import "bootstrap/dist/css/bootstrap.min.css"; */
 import { useState } from "react";
+import { useFormik } from "formik";
+import { CustomInput, AlertLabel } from "../../components";
+import { date } from "yup";
 
 function Form() {
-  const [selectedOption, setSelectedOption] = useState("option2");
-  const [selectedOptionPerson, setSelectedOptionPerson] =
-    useState("persona natural");
+  const formik = useFormik({
+    initialValues: {
+      id: "",
+      anonymous: "false", // "true" or "false
+      ruc: "",
+      businessName: "",
+      email: "",
+      relationEntity: "",
+      dTypePerson: "",
+      dDni: "",
+      dFatherLastname: "",
+      dMotherLastname: "",
+      dNames: "",
+      dPhone: "",
+      typeInfringement: "",
+      entity: "",
+      organicUnit: "",
+      date: "",
+      peopleInvolved: [],
+      detail: "",
+      lastCode: "",
+      file: [],
+      fdate: "",
+      fstatus: "",
+      files: [],
+    },
+    onSubmit: (values) => {
+      alert(JSON.stringify(values, null, 2));
+    },
+    handleChange: (e) => {
+      console.log(e.target.value);
+    },
+  });
 
-  const [name, setName] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [relation, setRelation] = useState("");
+  const options = {
+    relationEntity: [
+      { value: "Cliente / Usuario", label: "Cliente / Usuario" },
+      { value: "Otro", label: "Otro" },
+      { value: "Proveedor", label: "Proveedor" },
+      { value: "Trabajador", label: "Trabajador" },
+    ],
+
+    dTypePerson: [
+      {
+        value: "Persona Natural",
+        label: "Persona Natural",
+      },
+      {
+        value: "Persona Juridica",
+        label: "Persona Juridica",
+      },
+    ],
+
+    typeInfringement: [
+      { value: "1", label: "Opción 1" },
+      { value: "2", label: "Opción 2" },
+    ],
+
+    entity: [
+      { value: "1", label: "Opción 1" },
+      { value: "2", label: "Opción 2" },
+    ],
+
+    organicUnit: [
+      { value: "1", label: "Opción 1" },
+      { value: "2", label: "Opción 2" },
+    ],
+
+    iRelation: [
+      { value: "1", label: "Opción 1" },
+      { value: "2", label: "Opción 2" },
+    ],
+  }
+
+  const [peopleInvolved, setPeopleInvolved] = useState({}) // [{id: "", name: "", lastname: "", relation: ""}
+
   const [tempData, setTempData] = useState([]);
 
   const handleAddTempData = () => {
-    const newData = { name, lastname, relation };
+    const newData = { ...peopleInvolved };
     setTempData([...tempData, newData]);
-    setName("");
-    setLastname("");
-    setRelation("");
+    formik.values.peopleInvolved.push(newData);
+    setPeopleInvolved({});
   };
 
   const handleRemoveTempData = (index) => {
     const updatedTempData = tempData.filter((_, i) => i !== index);
+    formik.values.peopleInvolved = formik.values.peopleInvolved.filter((_, i) => i !== index);
     setTempData(updatedTempData);
   };
-  
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+
+  const [fileList, setFileList] = useState([]);
+
+
+  const handleFileChange = (e) => {
+    setFileList([...fileList, ...e.target.files]);
+
+    const data = new FormData();
+    data.append(`file-${e.target.files.length}`, e.target.files[0], e.target.files[0].name);
+    formik.values.files.push(data);
+    for(const value of formik.values.files.values()){
+      console.log("desde el formik", value);
+    }
+    console.log(fileList);
   };
 
-  const handleOptionChangePerson = (event) => {
-    console.log(event.target.value);
-    setSelectedOptionPerson(event.target.value);
+  const handleUploadClick = () => {
+    if (!fileList) {
+      return;
+    }
+
+    // 👇 Create new FormData object and append files
+    const data = new FormData();
+    fileList.forEach((file, i) => {
+      data.append(`file-${i}`, file, file.name);
+    });
+
+    for (const value of data.values()) {
+      console.log("desde la data", value);
+    }
+
+    /*     // 👇 Uploading the files using the fetch API to the server
+        fetch('https://httpbin.org/post', {
+          method: 'POST',
+          body: data,
+        })
+          .then((res) => res.json())
+          .then((data) => console.log(data))
+          .catch((err) => console.error(err)); */
   };
+
+  const handleRemoveFile = (index) => {
+    const updatedFileList = fileList.filter((_, i) => i !== index);
+    formik.values.files = formik.values.files.filter((_, i) => i !== index);
+    setFileList(updatedFileList);
+    for(const value of formik.values.files.values()){
+      console.log("desde el formik", value);
+    }
+  }
+
+  const files = fileList ? [...fileList] : [];
 
   return (
     <div className="container">
@@ -40,7 +153,7 @@ function Form() {
           <h3>LOGO</h3>
         </div>
       </div>
-      <div className="card-body mb-3 text-center">
+      <form className="card-body mb-3 text-center" onSubmit={formik.handleSubmit}>
         <div className="row h-auto border">
           <div className="border p-3 bg-body-secondary">
             <h3 className="fw-bold">LÍNEA ÉTICA INDEPENDIENTE</h3>
@@ -49,65 +162,25 @@ function Form() {
             <p>Formulario de Registro de Denuncia</p>
           </div>
           <div className="container p-4">
-            <div className="d-flex-colunm text-start border p-2 rounded bg-info-subtle bg-opacity-25">
-              <label
-                className="text-success-emphasis fw-bold pb-1"
-                htmlFor="name"
-              >
-                ¿Desea presentar una denuncia de forma anónima?
-              </label>
-              <div className="row justify-content-start">
-                <div className="col-1">
-                  <label
-                    className="form-check-label"
-                    style={{
-                      paddingLeft: "1rem",
-                      paddingRight: "0.5rem",
-                    }}
-                    htmlFor="anonymous"
-                  >
-                    Sí
-                  </label>
-                  <input
-                    type="radio"
-                    value="option1"
-                    checked={selectedOption === "option1"}
-                    onChange={handleOptionChange}
-                  />
-                </div>
-                <div className="col-1">
-                  <label
-                    className="form-check-label"
-                    htmlFor="anonymous"
-                    style={{
-                      paddingLeft: "1rem",
-                      paddingRight: "0.5rem",
-                    }}
-                  >
-                    No
-                  </label>
-                  <input
-                    type="radio"
-                    value="option2"
-                    checked={selectedOption === "option2"}
-                    onChange={handleOptionChange}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="row p-3">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-              >
-                Correo electrónico a donde se le notificará :
-              </label>
-              <div className="col-sm-8">
-                <input type="email" className="form-control" id="inputEmail3" />
-              </div>
-            </div>
+            <AlertLabel
+              type="radio"
+              label="¿Desea presentar una denuncia de forma anónima?"
+              value={formik.values.anonymous}
+              id="anonymous"
+              name="anonymous"
+              onChange={formik.handleChange}
+            />
+            <CustomInput
+              id="email"
+              value={formik.values.email}
+              name="email"
+              label="Correo electrónico a donde se le notificará :"
+              type="email"
+              placeholder="example@mail.com"
+              onChange={formik.handleChange}
+            />
 
-            {selectedOption === "option1" && (
+            {formik.values.anonymous === "true" && (
               <div className="p-3 text-start text-danger">
                 <li className="">
                   El uso de este correo electrónico es sólo para notificaciones
@@ -124,307 +197,174 @@ function Form() {
                 </li>
               </div>
             )}
-            <div className="row p-3">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-              >
-                Relación con la Entidad, donde se presentó el hecho denunciado:
-              </label>
-              <div className="col-sm-8">
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                >
-                  <option selected>Seleccione una opción</option>
-                  <option value="1">Opción 1</option>
-                  <option value="2">Opción 2</option>
-                  <option value="3">Opción 3</option>
-                </select>
-              </div>
-            </div>
-            {selectedOption === "option1" && (
-              <div>
-                <div className="d-flex-colunm rounded bg-info-subtle bg-opacity-25">
-                  <p
-                    className="p-2 text-success-emphasis fw-bold text-start"
-                    htmlFor="name"
-                  >
-                    1. DATOS DEL DENUNCIANTE (en caso no haya seleccionado la
-                    opcion de anónimo)
-                  </p>
-                </div>
-                <div className="row p-2">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                  >
-                    TIPO DE PERSONA:
-                  </label>
-                  <div className="col-sm-8">
-                    <select
-                      className="form-select"
-                      aria-label="Default select example"
-                      value={selectedOptionPerson}
-                      onChange={handleOptionChangePerson}
-                    >
-                      <option value="persona natural" selected>
-                        persona natural
-                      </option>
-                      <option value="persona juridica">persona juridica</option>
-                    </select>
-                  </div>
-                </div>
-
-                {selectedOptionPerson === "persona juridica" && (
-                  <div>
-                    <div className="row p-2">
-                      <label
-                        htmlFor="inputEmail3"
-                        className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                      >
-                        RUC :
-                      </label>
-                      <div className="col-sm-8">
-                        <input type="text" className="form-control" id="ruc" />
-                      </div>
-                    </div>
-                    <div className="row p-2">
-                      <label
-                        htmlFor="inputEmail3"
-                        className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                      >
-                        RAZÓN SOCIAL:
-                      </label>
-                      <div className="col-sm-8">
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="inputEmail3"
-                        />
-                      </div>
-                    </div>
-                  </div>
+            <CustomInput
+              id="relationEntity"
+              name="relationEntity"
+              label="Relación con la Entidad, donde se presentó el hecho denunciado:"
+              type="select"
+              placeholder="digite aqui..."
+              value={formik.values.relationEntity}
+              onChange={formik.handleChange}
+              options={options.relationEntity}
+            />
+            {formik.values.anonymous === "false" && (
+              <>
+                <AlertLabel
+                  label="1. DATOS DEL DENUNCIANTE (en caso no haya seleccionado la opcion de anónimo)"
+                />
+                <CustomInput
+                  id="dTypePerson"
+                  name="dTypePerson"
+                  label="TIPO DE PERSONA:"
+                  type="select"
+                  placeholder="digite aqui..."
+                  value={formik.values.dTypePerson}
+                  onChange={formik.handleChange}
+                  options={options.dTypePerson}
+                />
+                {formik.values.dTypePerson === "Persona Juridica" && (
+                  <>
+                    <CustomInput
+                      id="ruc"
+                      name="ruc"
+                      label="RUC :"
+                      type="text"
+                      placeholder="digite aqui..."
+                      value={formik.values.ruc}
+                      onChange={formik.handleChange}
+                    />
+                    <CustomInput
+                      id="businessName"
+                      name="businessName"
+                      label="RAZÓN SOCIAL:"
+                      type="text"
+                      placeholder="digite aqui..."
+                      value={formik.values.businessName}
+                      onChange={formik.handleChange}
+                    />
+                  </>
                 )}
 
-                <div className="row p-2">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                  >
-                    DNI :
-                  </label>
-                  <div className="col-sm-8">
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="inputEmail3"
-                    />
-                  </div>
-                </div>
-                <div className="row p-2">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                  >
-                    APELLIDO PATERNO:
-                  </label>
-                  <div className="col-sm-8">
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="inputEmail3"
-                    />
-                  </div>
-                </div>
-                <div className="row p-2">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                  >
-                    APELLIDO MATERNO:
-                  </label>
-                  <div className="col-sm-8">
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="inputEmail3"
-                    />
-                  </div>
-                </div>
-                <div className="row p-2">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                  >
-                    NOMBRES:
-                  </label>
-                  <div className="col-sm-8">
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="inputEmail3"
-                    />
-                  </div>
-                </div>
-                <div className="row p-2">
-                  <label
-                    htmlFor="inputEmail3"
-                    className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-                  >
-                    TELÉFONO:
-                  </label>
-                  <div className="col-sm-8">
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="inputEmail3"
-                    />
-                  </div>
-                </div>
-              </div>
+                <CustomInput
+                  id="dDni"
+                  name="dDni"
+                  label="DNI :"
+                  type="text"
+                  placeholder="digite aqui..."
+                  value={formik.values.dDni}
+                  onChange={formik.handleChange}
+                />
+                <CustomInput
+                  id="dFatherLastname"
+                  name="dFatherLastname"
+                  label="APELLIDO PATERNO:"
+                  type="text"
+                  placeholder="digite aqui..."
+                  value={formik.values.dFatherLastname}
+                  onChange={formik.handleChange}
+                />
+                <CustomInput
+                  id="dMotherLastname"
+                  name="dMotherLastname"
+                  label="APELLIDO MATERNO:"
+                  type="text"
+                  placeholder="digite aqui..."
+                  value={formik.values.dMotherLastname}
+                  onChange={formik.handleChange}
+                />
+                <CustomInput
+                  id="dNames"
+                  name="dNames"
+                  label="NOMBRES:"
+                  type="text"
+                  placeholder="digite aqui..."
+                  value={formik.values.dNames}
+                  onChange={formik.handleChange}
+                />
+                <CustomInput
+                  id="dPhone"
+                  name="dPhone"
+                  label="TELÉFONO:"
+                  type="phone"
+                  placeholder=""
+                  value={formik.values.dPhone}
+                  onChange={formik.handleChange}
+                />
+              </>
             )}
-            <div className="d-flex-colunm rounded bg-info-subtle bg-opacity-25">
-              <p
-                className="p-2 text-success-emphasis fw-bold text-start"
-                htmlFor="name"
-              >
-                2. INFORMACIÓN DE LA DENUNCIA
-              </p>
-            </div>
-            <div className="row p-2">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-              >
-                Seleccione el tipo de infracción a denunciar:
-              </label>
-              <div className="col-sm-8">
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                >
-                  <option selected>Seleccione una opción</option>
-                  <option value="1">Opción 1</option>
-                  <option value="2">Opción 2</option>
-                  <option value="3">Opción 3</option>
-                </select>
-              </div>
-            </div>
-            <div className="row p-2">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-              >
-                Indique la Entidad, donde ocurrieron los hechos a denunciar:
-              </label>
-              <div className="col-sm-8">
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                >
-                  <option selected>Seleccione una opción</option>
-                  <option value="1">Opción 1</option>
-                  <option value="2">Opción 2</option>
-                  <option value="3">Opción 3</option>
-                </select>
-              </div>
-            </div>
-            <div className="row p-2">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-              >
-                Indique la unidad orgánica o proceso donde han ocurrido los
-                hechos a denunciar:
-              </label>
-              <div className="col-sm-8">
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                >
-                  <option selected>Seleccione una opción</option>
-                  <option value="1">Opción 1</option>
-                  <option value="2">Opción 2</option>
-                  <option value="3">Opción 3</option>
-                </select>
-              </div>
-            </div>
-            <div className="row p-2">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-4 col-form-label text-start"
-              >
-                ¿En qué fecha ocurrió el hecho de la denuncia? (aproximado):
-              </label>
-              <div className="col-sm-8">
-                <input type="date" className="form-control" id="inputEmail3" />
-              </div>
-            </div>
-
-            <div className="d-flex-colunm rounded bg-info-subtle bg-opacity-25">
-              <p
-                className="p-2 text-success-emphasis text-start"
-                htmlFor="name"
-              >
-                Identifique a las personas involucradas en la denuncia:
-              </p>
-            </div>
-            <div className="row p-2">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-3 col-form-label text-start"
-              >
-                NOMBRES:
-              </label>
-              <div className="col-sm-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="inputEmail3"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="row p-2">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-3 col-form-label text-start"
-              >
-                APELLIDOS:
-              </label>
-              <div className="col-sm-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="inputEmail3"
-                  value={lastname}
-                  onChange={(e) => setLastname(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="row p-2">
-              <label
-                htmlFor="inputEmail3"
-                className="fw-bold fs-6 col-sm-3 col-form-label text-start"
-              >
-                Relacion con la entidad:
-              </label>
-              <div className="col-sm-3">
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  value={relation}
-                  onChange={(e) => setRelation(e.target.value)}
-                >
-                  <option selected>Seleccione una opción</option>
-                  <option value="1">Opción 1</option>
-                  <option value="2">Opción 2</option>
-                  <option value="3">Opción 3</option>
-                </select>
-              </div>
-            </div>
+            <AlertLabel
+              label="2. INFORMACIÓN DE LA DENUNCIA"
+            />
+            <CustomInput
+              id="typeInfringement"
+              name="typeInfringement"
+              label="Seleccione el tipo de infracción a denunciar:"
+              type="select"
+              placeholder="digite aqui..."
+              value={formik.values.typeInfringement}
+              onChange={formik.handleChange}
+              options={options.typeInfringement}
+            />
+            <CustomInput
+              id="entity"
+              name="entity"
+              label="Indique la Entidad, donde ocurrieron los hechos a denunciar:"
+              type="select"
+              placeholder="digite aqui..."
+              value={formik.values.entity}
+              onChange={formik.handleChange}
+              options={options.entity}
+            />
+            <CustomInput
+              id="organicUnit"
+              name="organicUnit"
+              label="Indique la unidad orgánica o proceso donde han ocurrido los hechos a denunciar:"
+              type="select"
+              placeholder="digite aqui..."
+              value={formik.values.organicUnit}
+              onChange={formik.handleChange}
+              options={options.organicUnit}
+            />
+            <CustomInput
+              id="date"
+              name="date"
+              label="¿En qué fecha ocurrió el hecho de la denuncia? (aproximado):"
+              type="date"
+              placeholder="digite aqui..."
+              value={formik.values.date}
+              onChange={formik.handleChange}
+            />
+            <AlertLabel
+              label="3. PERSONAS INVOLUCRADAS"
+            />
+            <CustomInput
+              id="iNames"
+              name="iNames"
+              label="NOMBRES:"
+              type="text"
+              placeholder="digite aqui..."
+              value={peopleInvolved.iNames}
+              onChange={(e) => setPeopleInvolved({ ...peopleInvolved, iNames: e.target.value })}
+            />
+            <CustomInput
+              id="iLastname"
+              name="iLastname"
+              label="APELLIDOS:"
+              type="text"
+              placeholder="digite aqui..."
+              value={peopleInvolved.iLastname}
+              onChange={(e) => setPeopleInvolved({ ...peopleInvolved, iLastname: e.target.value })}
+            />
+            <CustomInput
+              id="iRelation"
+              name="iRelation"
+              label="RELACIÓN CON LA ENTIDAD:"
+              type="select"
+              placeholder="digite aqui..."
+              options={options.iRelation}
+              value={peopleInvolved.iRelation}
+              onChange={(e) => setPeopleInvolved({ ...peopleInvolved, iRelation: e.target.value })}
+            />
             <button
               type="button"
               onClick={handleAddTempData}
@@ -444,26 +384,20 @@ function Form() {
                 <tbody>
                   {tempData.map((data, index) => (
                     <tr key={index}>
-                      <td>{data.name + " " + data.lastname}</td>
-                      <td>{data.relation}</td>
+                      <td>{data.iNames + " " + data.iLastname}</td>
+                      <td>{data.iRelation}</td>
                       <td>
-                  <button className="text-danger border-0" onClick={() => handleRemoveTempData(index)}>
-                    X
-                  </button></td>
+                        <button type="button" className="text-danger border-0" onClick={() => handleRemoveTempData(index)}>
+                          X
+                        </button></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="d-flex-colunm rounded bg-info-subtle bg-opacity-25">
-              <p
-                className="p-2 text-success-emphasis text-start"
-                htmlFor="name"
-              >
-                Detalle los hechos sucedidos que permitan analizar y evaluar la
-                denuncia: :
-              </p>
-            </div>
+            <AlertLabel
+              label="4. Detalle los hechos sucedidos que permitan analizar y evaluar la denuncia :"
+            />
             <div className="row p-2">
               <label
                 htmlFor="inputEmail3"
@@ -495,16 +429,20 @@ function Form() {
                 />
               </div>
             </div>
-            <div className="d-flex-colunm rounded bg-info-subtle bg-opacity-25">
-              <p
-                className="p-2 text-success-emphasis text-start"
-                htmlFor="name"
-              >
-                Adjunte la evidencia sobre los hechos denunciados (opcional): :
-              </p>
-            </div>
-            <div className="">
-              <input className="form-control" type="file" id="formFile" />
+            <AlertLabel
+              label="5. Adjunte la evidencia sobre los hechos denunciados (opcional) :"
+            />
+            <input className="form-control" type="file" id="formFile" onChange={handleFileChange} />
+            <div className="mb-3">
+              <ul>
+                {files && files.map((file, i) => (
+                  <li key={i}>
+                    {file.name} - {file.type}
+                  </li>
+                ))}
+              </ul>
+
+              <button onClick={handleUploadClick}>Upload</button>
             </div>
             <div className="p-3 text-start text-danger">
               <li className="">
@@ -513,6 +451,33 @@ function Form() {
               <li className="">
                 El tamaño máximo del archivo debe ser menor o igual a 25MB
               </li>
+            </div>
+            <div className="responsive p-2">
+              <table className="table">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Titulo</th>
+                    <th>Enlace</th>
+                    <th>Ver</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {files && files.map((file, index) => (
+                    <tr key={index}>
+                      <td>{file.name}</td>
+                      <td>{file.type}</td>
+                      <td>
+                        <a href={URL.createObjectURL(file)} target="_blank" rel="noreferrer">Ver</a>
+                      </td>
+                      <td>
+                        <button type="button" className="text-danger border-0" onClick={() => handleRemoveFile(index)}>
+                          X
+                        </button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div className="col-md-12 mb-3">
               <div className="alert alert-info hidden-sm hidden-xs text-primary text-start ">
@@ -543,12 +508,12 @@ function Form() {
                 </span>
               </div>
             </div>
-            <button type="button" className="btn btn-primary float-start">
+            <button type="button" className="btn btn-primary float-start" onClick={formik.handleSubmit}>
               Enviar{" "}
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
