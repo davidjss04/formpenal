@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { CustomInput, AlertLabel } from "../../components";
-import { date } from "yup";
+import * as Yup from 'yup';
+import { options } from "../../data";
+import { API_URL } from "../../config";
+import axios from 'axios';
 
 function Form() {
   const formik = useFormik({
     initialValues: {
-      id: "",
       anonymous: "false", // "true" or "false
       ruc: "",
       businessName: "",
@@ -25,62 +27,94 @@ function Form() {
       peopleInvolved: [],
       detail: "",
       lastCode: "",
-      file: [],
       fdate: "",
-      fstatus: "",
       files: [],
+      fstatus: "",
     },
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      if (!fileList) {
+        return;
+      }
+
+      console.log("files", fileList);
+
+      const data = new FormData();
+      fileList.forEach((file) => {
+        data.append('file', file);
+      });
+
+      try {
+        axios.post(`${API_URL}/complaints/file`, data).then((response) => {
+          if (response.status === 201) {
+            console.log(response);
+            if (response.data.files.length > 0) {
+              values.files = response.data.files;
+              console.log("values", JSON.stringify(values));
+            }
+            axios.post(`${API_URL}/complaints`, values).then((response) => {
+              if (response.status === 201) {
+                console.log(response);
+              }
+            });
+            return
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
-    handleChange: (e) => {
-      console.log(e.target.value);
-    },
+    validationSchema: Yup.object({
+      anonymous: Yup.string().required("Campo requerido"),
+      ruc: Yup.string().when("dTypePerson", {
+        is: "Persona Juridica",
+        then: Yup.string().required("Campo requerido"),
+      }),
+      businessName: Yup.string().when("dTypePerson", {
+        is: "Persona Juridica",
+        then: Yup.string().required("Campo requerido"),
+      }),
+      email: Yup.string().email("Correo electrónico inválido").required("Campo requerido"),
+      relationEntity: Yup.string().required("Campo requerido"),
+      dTypePerson: Yup.string().required("Campo requerido"),
+      dDni: Yup.string().when("dTypePerson", {
+        is: "Persona Natural",
+        then: Yup.string().required("Campo requerido"),
+      }),
+      dFatherLastname: Yup.string().when("dTypePerson", {
+        is: "Persona Natural",
+        then: Yup.string().required("Campo requerido"),
+      }),
+      dMotherLastname: Yup.string().when("dTypePerson", {
+        is: "Persona Natural",
+        then: Yup.string().required("Campo requerido"),
+      }),
+      dNames: Yup.string().when("dTypePerson", {
+        is: "Persona Natural",
+        then: Yup.string().required("Campo requerido"),
+      }),
+      dPhone: Yup.string().when("dTypePerson", {
+        is: "Persona Natural",
+        then: Yup.string().required("Campo requerido"),
+      }),
+      typeInfringement: Yup.string().required("Campo requerido"),
+      entity: Yup.string().required("Campo requerido"),
+      organicUnit: Yup.string().required("Campo requerido"),
+      date: Yup.string().required("Campo requerido"),
+      detail: Yup.string().required("Campo requerido"),
+      lastCode: Yup.number().required("Campo requerido"),
+      fdate: Yup.string().required("Campo requerido"),
+    }),
   });
 
-  const options = {
-    relationEntity: [
-      { value: "Cliente / Usuario", label: "Cliente / Usuario" },
-      { value: "Otro", label: "Otro" },
-      { value: "Proveedor", label: "Proveedor" },
-      { value: "Trabajador", label: "Trabajador" },
-    ],
+  useEffect(() => {
+    console.log(API_URL);
+  }, []);
 
-    dTypePerson: [
-      {
-        value: "Persona Natural",
-        label: "Persona Natural",
-      },
-      {
-        value: "Persona Juridica",
-        label: "Persona Juridica",
-      },
-    ],
-
-    typeInfringement: [
-      { value: "1", label: "Opción 1" },
-      { value: "2", label: "Opción 2" },
-    ],
-
-    entity: [
-      { value: "1", label: "Opción 1" },
-      { value: "2", label: "Opción 2" },
-    ],
-
-    organicUnit: [
-      { value: "1", label: "Opción 1" },
-      { value: "2", label: "Opción 2" },
-    ],
-
-    iRelation: [
-      { value: "1", label: "Opción 1" },
-      { value: "2", label: "Opción 2" },
-    ],
-  }
 
   const [peopleInvolved, setPeopleInvolved] = useState({}) // [{id: "", name: "", lastname: "", relation: ""}
-
   const [tempData, setTempData] = useState([]);
+  const [fileList, setFileList] = useState([]);
+  const files = fileList ? [...fileList] : [];
 
   const handleAddTempData = () => {
     const newData = { ...peopleInvolved };
@@ -95,56 +129,15 @@ function Form() {
     setTempData(updatedTempData);
   };
 
-  const [fileList, setFileList] = useState([]);
-
-
   const handleFileChange = (e) => {
     setFileList([...fileList, ...e.target.files]);
-
-    const data = new FormData();
-    data.append(`file-${e.target.files.length}`, e.target.files[0], e.target.files[0].name);
-    formik.values.files.push(data);
-    for(const value of formik.values.files.values()){
-      console.log("desde el formik", value);
-    }
     console.log(fileList);
-  };
-
-  const handleUploadClick = () => {
-    if (!fileList) {
-      return;
-    }
-
-    // 👇 Create new FormData object and append files
-    const data = new FormData();
-    fileList.forEach((file, i) => {
-      data.append(`file-${i}`, file, file.name);
-    });
-
-    for (const value of data.values()) {
-      console.log("desde la data", value);
-    }
-
-    /*     // 👇 Uploading the files using the fetch API to the server
-        fetch('https://httpbin.org/post', {
-          method: 'POST',
-          body: data,
-        })
-          .then((res) => res.json())
-          .then((data) => console.log(data))
-          .catch((err) => console.error(err)); */
   };
 
   const handleRemoveFile = (index) => {
     const updatedFileList = fileList.filter((_, i) => i !== index);
-    formik.values.files = formik.values.files.filter((_, i) => i !== index);
     setFileList(updatedFileList);
-    for(const value of formik.values.files.values()){
-      console.log("desde el formik", value);
-    }
   }
-
-  const files = fileList ? [...fileList] : [];
 
   return (
     <div className="container">
@@ -178,6 +171,7 @@ function Form() {
               type="email"
               placeholder="example@mail.com"
               onChange={formik.handleChange}
+              error={formik.errors.email}
             />
 
             {formik.values.anonymous === "true" && (
@@ -206,6 +200,7 @@ function Form() {
               value={formik.values.relationEntity}
               onChange={formik.handleChange}
               options={options.relationEntity}
+              error={formik.errors.relationEntity}
             />
             {formik.values.anonymous === "false" && (
               <>
@@ -221,6 +216,7 @@ function Form() {
                   value={formik.values.dTypePerson}
                   onChange={formik.handleChange}
                   options={options.dTypePerson}
+                  error={formik.errors.dTypePerson}
                 />
                 {formik.values.dTypePerson === "Persona Juridica" && (
                   <>
@@ -232,6 +228,7 @@ function Form() {
                       placeholder="digite aqui..."
                       value={formik.values.ruc}
                       onChange={formik.handleChange}
+                      error={formik.errors.ruc}
                     />
                     <CustomInput
                       id="businessName"
@@ -241,6 +238,7 @@ function Form() {
                       placeholder="digite aqui..."
                       value={formik.values.businessName}
                       onChange={formik.handleChange}
+                      error={formik.errors.businessName}
                     />
                   </>
                 )}
@@ -433,17 +431,6 @@ function Form() {
               label="5. Adjunte la evidencia sobre los hechos denunciados (opcional) :"
             />
             <input className="form-control" type="file" id="formFile" onChange={handleFileChange} />
-            <div className="mb-3">
-              <ul>
-                {files && files.map((file, i) => (
-                  <li key={i}>
-                    {file.name} - {file.type}
-                  </li>
-                ))}
-              </ul>
-
-              <button onClick={handleUploadClick}>Upload</button>
-            </div>
             <div className="p-3 text-start text-danger">
               <li className="">
                 El formato de archivo puede ser pdf, imagen, audio, video
@@ -508,9 +495,11 @@ function Form() {
                 </span>
               </div>
             </div>
-            <button type="button" className="btn btn-primary float-start" onClick={formik.handleSubmit}>
-              Enviar{" "}
-            </button>
+            <div className="d-grid gap-2 col-2 mx-auto">
+              <button type="button" className="btn btn-primary btn-lg" onClick={formik.handleSubmit}>
+                Enviar
+              </button>
+            </div>
           </div>
         </div>
       </form>

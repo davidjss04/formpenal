@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 
 const CustomInput = (
-  { id, name, label, type, placeholder, value, onChange, options = [] }
+  { id, name, label, type, placeholder, value, onChange, options = [], error }
 ) => {
   return (
     <div className="row p-3">
@@ -28,18 +28,20 @@ const CustomInput = (
               className='form-select'
               onChange={onChange}
               value={value}
-              defaultValue={value}
               required
             >
-              <option selected>Seleccione una opción</option>
+              <option value="">Seleccione una opción</option>
               {
-                options.map((option) => (
+                options.length !== 0 && options.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))
               }
             </select>
 
           )
+        }
+        {
+          error && <div className="text-danger">{error}</div>
         }
       </div>
     </div>
@@ -57,7 +59,8 @@ CustomInput.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape({
     value: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-  }))
+  })),
+  error: PropTypes.string
 };
 
 CustomInput.defaultProps = {
@@ -68,7 +71,11 @@ CustomInput.defaultProps = {
   placeholder: '',
   value: '',
   onChange: () => { },
-  options: [],
+  options: [
+    { value: "1", label: "Opción 1" },
+    { value: "2", label: "Opción 2" },
+  ],
+  error: ''
 }
 
 export default CustomInput;
