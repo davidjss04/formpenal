@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useFormik } from "formik";
 import { CustomInput, AlertLabel } from "../../components";
 import * as Yup from 'yup';
@@ -7,10 +7,13 @@ import { API_URL } from "../../config";
 import axios from 'axios';
 
 function Form() {
+
+  const [required, setRequired] = useState(null);
+
   const formik = useFormik({
     initialValues: {
       anonymous: "false", // "true" or "false
-      ruc: "Natural",
+      ruc: "",
       businessName: "",
       email: "",
       relationEntity: "",
@@ -41,10 +44,14 @@ function Form() {
       dFatherLastname: Yup.string().required("Campo requerido para la denuncia"),
       dNames: Yup.string().required("Campo requerido para la denuncia"),
       dPhone: Yup.number().required("Campo requerido para la denuncia"),
-      ruc: Yup.string().when("dTypePerson", {
-        is: "Juridica",
-        then: Yup.string().required("Campo requerido para la denuncia"),
-      }),
+      ruc: required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      businessName: required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      typeInfringement: Yup.string().required("Campo requerido para la denuncia"),
+      entity: Yup.string().required("Campo requerido para la denuncia"),
+      organicUnit: Yup.string().required("Campo requerido para la denuncia"),
+      date: Yup.string().required("Campo requerido para la denuncia"),
+      detail: Yup.string().required("Campo requerido para la denuncia"),
+      lastCode: Yup.string().required("Campo requerido para la denuncia"),
     }),
     onSubmit: (values) => {
       if (!fileList) {
@@ -61,9 +68,9 @@ function Form() {
       try {
         axios.post(`${API_URL}/complaints/file`, data).then((response) => {
           if (response.status === 201) {
-            console.log(response);
-            if (response.data.files.length > 0) {
-              values.files = response.data.files;
+            console.log("response daa", response.data);
+            if (response.data.length > 0) {
+              values.files = response.data
               console.log("values", JSON.stringify(values));
             }
             axios.post(`${API_URL}/complaints`, values).then((response) => {
@@ -80,8 +87,20 @@ function Form() {
     },
   });
 
+  formik.handleChange = (e) => {
+    if (e.target.name === "dTypePerson") {
+      if (e.target.value === "Juridica") {
+        setRequired(true);
+      }
 
+      if (e.target.value === "Natural") {
+        setRequired(false);
+      }
+    }
 
+    console.log(e.target.name, e.target.value);
+    formik.setFieldValue(e.target.name, e.target.value);
+  };
 
 
   const [peopleInvolved, setPeopleInvolved] = useState({}) // [{id: "", name: "", lastname: "", relation: ""}
@@ -103,7 +122,12 @@ function Form() {
   };
 
   const handleFileChange = (e) => {
+    if (e.target.files.length > 0) {
+      e.target.files[0].size > 25000000 && alert("El tamaño máximo del archivo debe ser menor o igual a 25MB");
+    }
+
     setFileList([...fileList, ...e.target.files]);
+
     console.log(fileList);
   };
 
@@ -384,8 +408,17 @@ function Form() {
                 involucradas, cuándo, cómo y dónde ocurrieron los hechos.
               </label>
               <div className="col-sm-12">
-                <textarea className="form-control" />
+                <textarea className="form-control"
+                  id="detail"
+                  name="detail"
+                  value={formik.values.detail}
+                  onChange={formik.handleChange}
+                  placeholder="digite aqui..."
+                />
               </div>
+              {
+                formik.errors.detail && <div className="text-danger">{formik.errors.detail}</div>
+              }
             </div>
             <div className="row p-2">
               <label
@@ -399,16 +432,24 @@ function Form() {
               <div className="col-sm-3">
                 <input
                   type="text"
-                  placeholder="digite aqui..."
                   className="form-control"
-                  id="inputEmail3"
+                  id="lastCode"
+                  name="lastCode"
+                  value={formik.values.lastCode}
+                  onChange={formik.handleChange}
+                  placeholder="digite aqui..."
                 />
               </div>
+              {
+                formik.errors.lastCode && <div className="text-danger">{formik.errors.lastCode}</div>
+              }
             </div>
             <AlertLabel
               label="5. Adjunte la evidencia sobre los hechos denunciados (opcional) :"
             />
-            <input className="form-control" type="file" id="formFile" onChange={handleFileChange} />
+            <input className="form-control" type="file" id="formFile" onChange={handleFileChange}
+              accept="application/pdf, image/*, audio/*, video/*"
+            />
             <div className="p-3 text-start text-danger">
               <li className="">
                 El formato de archivo puede ser pdf, imagen, audio, video

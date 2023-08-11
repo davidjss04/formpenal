@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./login.css";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { API_URL } from "../../config";
 
-const apiUrl = "http://localhost:3000/users/login";
+const apiUrl = API_URL + "/login";
 const cookies = new Cookies();
 async function session(us, pwd) {
 
@@ -18,10 +19,10 @@ async function session(us, pwd) {
     })
     .catch((err) => {
       console.log("error en: " + err);
-      return {response: "error de conexion"};
+      return { response: "error de conexion" };
     });
 
-    console.log("object: "+data_req)
+  console.log("object: " + data_req)
   switch (data_req.response) {
     case "user not found":
       document.getElementById("error").innerHTML = "el usuario no existe"
@@ -34,9 +35,9 @@ async function session(us, pwd) {
       break;
 
     default:
-        document.getElementById("error").innerHTML = "activar loader"
-        cookies.set("user", data_req.user);
-        window.location.href = "/admin"
+      document.getElementById("error").innerHTML = "activar loader"
+      cookies.set("user", data_req.user);
+      window.location.href = "/admin"
   }
 }
 
@@ -84,7 +85,7 @@ function Login() {
               />
             </div>
             <div className="mb-4">
-            <span className="text-danger mb-4" id="error"></span>
+              <span className="text-danger mb-4" id="error"></span>
             </div>
             <div className="form-group d-flex justify-content-around">
               <button
