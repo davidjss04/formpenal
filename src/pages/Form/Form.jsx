@@ -10,7 +10,7 @@ function Form() {
   const formik = useFormik({
     initialValues: {
       anonymous: "false", // "true" or "false
-      ruc: "",
+      ruc: "Natural",
       businessName: "",
       email: "",
       relationEntity: "",
@@ -31,6 +31,21 @@ function Form() {
       files: [],
       fstatus: "",
     },
+    validationSchema: Yup.object().shape({
+      anonymous: Yup.string().required("Campo requerido para la denuncia"),
+      email: Yup.string().email("Correo electrónico inválido").required("Campo requerido para la denuncia"),
+      relationEntity: Yup.string().required("Campo requerido para la denuncia"),
+      dTypePerson: Yup.string().required("Campo requerido para la denuncia"),
+      dDni: Yup.number().required("Campo requerido para la denuncia"),
+      dMotherLastname: Yup.string().required("Campo requerido para la denuncia"),
+      dFatherLastname: Yup.string().required("Campo requerido para la denuncia"),
+      dNames: Yup.string().required("Campo requerido para la denuncia"),
+      dPhone: Yup.number().required("Campo requerido para la denuncia"),
+      ruc: Yup.string().when("dTypePerson", {
+        is: "Juridica",
+        then: Yup.string().required("Campo requerido para la denuncia"),
+      }),
+    }),
     onSubmit: (values) => {
       if (!fileList) {
         return;
@@ -63,52 +78,10 @@ function Form() {
         console.log(error);
       }
     },
-    validationSchema: Yup.object({
-      anonymous: Yup.string().required("Campo requerido"),
-      ruc: Yup.string().when("dTypePerson", {
-        is: "Persona Juridica",
-        then: Yup.string().required("Campo requerido"),
-      }),
-      businessName: Yup.string().when("dTypePerson", {
-        is: "Persona Juridica",
-        then: Yup.string().required("Campo requerido"),
-      }),
-      email: Yup.string().email("Correo electrónico inválido").required("Campo requerido"),
-      relationEntity: Yup.string().required("Campo requerido"),
-      dTypePerson: Yup.string().required("Campo requerido"),
-      dDni: Yup.string().when("dTypePerson", {
-        is: "Persona Natural",
-        then: Yup.string().required("Campo requerido"),
-      }),
-      dFatherLastname: Yup.string().when("dTypePerson", {
-        is: "Persona Natural",
-        then: Yup.string().required("Campo requerido"),
-      }),
-      dMotherLastname: Yup.string().when("dTypePerson", {
-        is: "Persona Natural",
-        then: Yup.string().required("Campo requerido"),
-      }),
-      dNames: Yup.string().when("dTypePerson", {
-        is: "Persona Natural",
-        then: Yup.string().required("Campo requerido"),
-      }),
-      dPhone: Yup.string().when("dTypePerson", {
-        is: "Persona Natural",
-        then: Yup.string().required("Campo requerido"),
-      }),
-      typeInfringement: Yup.string().required("Campo requerido"),
-      entity: Yup.string().required("Campo requerido"),
-      organicUnit: Yup.string().required("Campo requerido"),
-      date: Yup.string().required("Campo requerido"),
-      detail: Yup.string().required("Campo requerido"),
-      lastCode: Yup.number().required("Campo requerido"),
-      fdate: Yup.string().required("Campo requerido"),
-    }),
   });
 
-  useEffect(() => {
-    console.log(API_URL);
-  }, []);
+
+
 
 
   const [peopleInvolved, setPeopleInvolved] = useState({}) // [{id: "", name: "", lastname: "", relation: ""}
@@ -218,13 +191,13 @@ function Form() {
                   options={options.dTypePerson}
                   error={formik.errors.dTypePerson}
                 />
-                {formik.values.dTypePerson === "Persona Juridica" && (
+                {formik.values.dTypePerson === "Juridica" && (
                   <>
                     <CustomInput
                       id="ruc"
                       name="ruc"
                       label="RUC :"
-                      type="text"
+                      type="string"
                       placeholder="digite aqui..."
                       value={formik.values.ruc}
                       onChange={formik.handleChange}
@@ -234,7 +207,7 @@ function Form() {
                       id="businessName"
                       name="businessName"
                       label="RAZÓN SOCIAL:"
-                      type="text"
+                      type="string"
                       placeholder="digite aqui..."
                       value={formik.values.businessName}
                       onChange={formik.handleChange}
@@ -247,10 +220,11 @@ function Form() {
                   id="dDni"
                   name="dDni"
                   label="DNI :"
-                  type="text"
+                  type="number"
                   placeholder="digite aqui..."
                   value={formik.values.dDni}
                   onChange={formik.handleChange}
+                  error={formik.errors.dDni}
                 />
                 <CustomInput
                   id="dFatherLastname"
@@ -260,6 +234,7 @@ function Form() {
                   placeholder="digite aqui..."
                   value={formik.values.dFatherLastname}
                   onChange={formik.handleChange}
+                  error={formik.errors.dFatherLastname}
                 />
                 <CustomInput
                   id="dMotherLastname"
@@ -269,6 +244,7 @@ function Form() {
                   placeholder="digite aqui..."
                   value={formik.values.dMotherLastname}
                   onChange={formik.handleChange}
+                  error={formik.errors.dMotherLastname}
                 />
                 <CustomInput
                   id="dNames"
@@ -278,15 +254,17 @@ function Form() {
                   placeholder="digite aqui..."
                   value={formik.values.dNames}
                   onChange={formik.handleChange}
+                  error={formik.errors.dNames}
                 />
                 <CustomInput
                   id="dPhone"
                   name="dPhone"
                   label="TELÉFONO:"
-                  type="phone"
-                  placeholder=""
+                  type="number"
+                  placeholder="digite aqui..."
                   value={formik.values.dPhone}
                   onChange={formik.handleChange}
+                  error={formik.errors.dPhone}
                 />
               </>
             )}

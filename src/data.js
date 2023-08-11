@@ -8,11 +8,11 @@ const options = {
 
     dTypePerson: [
         {
-            value: "Persona Natural",
+            value: "Natural",
             label: "Persona Natural",
         },
         {
-            value: "Persona Juridica",
+            value: "Juridica",
             label: "Persona Juridica",
         },
     ],
