@@ -62,10 +62,10 @@
   border-bottom: 1px var(--btn-color) solid;
 }
 .btn {
-  background: var(--btn-color) !important;
-  border: none !important;
-  border-radius: 20px !important;
-  padding: 10px 50px 10px 50px !important;
+  background: var(--btn-color);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 50px 10px 50px;
 }
 .btn:hover {
   background: #2c74b8;
