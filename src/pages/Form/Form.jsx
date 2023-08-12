@@ -26,6 +26,7 @@ function Form() {
       anonymous: "false", // "true" or "false
       ruc: "",
       businessName: "",
+      code: "",
       email: "",
       relationEntity: "",
       dTypePerson: "",
@@ -43,7 +44,7 @@ function Form() {
       lastCode: "",
       fdate: "",
       files: [],
-      fstatus: "",
+      fstatus: "pendiente",
     },
     validationSchema: Yup.object().shape({
       anonymous: Yup.string().required("Campo requerido para la denuncia"),

@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { API_URL } from "../../config";
 
-const apiUrl = API_URL + "/login";
+const apiUrl = API_URL + "/users/login";
 const cookies = new Cookies();
 async function session(us, pwd) {
 

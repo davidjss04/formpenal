@@ -67,61 +67,61 @@ const Details = () => {
         <thead>
           <tr>
             <th colSpan="2" className="text-center">
-              Detalle de la denuncia 00001
+              Detalle de la denuncia {data.code}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th>anonymous</th>
+            <th>Denuncia anónima</th>
             <td>{data.anonymous ? "Sí" : "No"}</td>
           </tr>
           <tr>
-            <th>businessName</th>
+            <th>Ruc</th>
+            <td>{data.ruc}</td>
+          </tr>
+          <tr>
+            <th>Razón social</th>
             <td>{data.businessName}</td>
           </tr>
           <tr>
-            <th>dFatherLastname</th>
+            <th>Apellido paterno</th>
             <td>{data.dFatherLastname}</td>
           </tr>
           <tr>
-            <th>dMotherLastname</th>
+            <th>Apellido materno</th>
             <td>{data.dMotherLastname}</td>
           </tr>
           <tr>
-            <th>dNames</th>
+            <th>Nombre</th>
             <td>{data.dNames}</td>
           </tr>
           <tr>
-            <th>dPhone</th>
+            <th>Teléfono</th>
             <td>{data.dPhone}</td>
           </tr>
           <tr>
-            <th>dTypePerson</th>
+            <th>Tipo de persona</th>
             <td>{data.dTypePerson}</td>
           </tr>
           <tr>
-            <th>date</th>
+            <th>Fecha de lo ocurrido</th>
             <td>{data.date}</td>
           </tr>
           <tr>
-            <th>detail</th>
+            <th>Detalle</th>
             <td>{data.detail}</td>
           </tr>
           <tr>
-            <th>email</th>
+            <th>Correo</th>
             <td>{data.email}</td>
           </tr>
           <tr>
-            <th>entity</th>
+            <th>Entidad</th>
             <td>{data.entity}</td>
           </tr>
           <tr>
-            <th>fdate</th>
-            <td>{data.fdate}</td>
-          </tr>
-          <tr>
-            <th className="align-middle">files</th>
+            <th className="align-middle">Archivos</th>
             <td>
               <ul>
                 {data.files &&
@@ -131,10 +131,10 @@ const Details = () => {
                       <strong>Tamaño:</strong> {element.size_file},{" "}
                       <strong>Nombre:</strong> {element.name_file},{" "}
                       <a
-                        target="__blank"
                         href={
                           "http://localhost:3000/complaints/" + element.url_file
                         }
+                        target="__blank"
                       >
                         Ver
                       </a>
@@ -144,11 +144,11 @@ const Details = () => {
             </td>
           </tr>
           <tr>
-            <th>fdate</th>
+            <th>Fecha de emisión</th>
             <td>{data.fdate}</td>
           </tr>
           <tr>
-            <th>fstatus</th>
+            <th>Estado</th>
             <td>
               <div className="d-flex gap-2">
                 <select
@@ -158,12 +158,17 @@ const Details = () => {
                   onChange={handleInputChange}
                   disabled={!editing}
                 >
-                  <option value="ESTADO 1">ESTADO 1</option>
-                  <option value="ESTADO 2">ESTADO 2</option>
-                  <option value="ESTADO 3">ESTADO 3</option>
+                  <option value={fstatus} selected>
+                    {fstatus}
+                  </option>
+                  {fstatus == "pendiente" && (
+                    <option value="aceptado">aceptado</option>
+                  )}
+                  {fstatus == "aceptado" && (
+                    <option value="pendiente">pendiente</option>
+                  )}
                 </select>
 
-           
                 <button
                   type="button"
                   className="btn btn-secondary"
@@ -182,15 +187,15 @@ const Details = () => {
             </td>
           </tr>
           <tr>
-            <th>lastCode</th>
+            <th>Código de denuncia anterior</th>
             <td>{data.lastCode}</td>
           </tr>
           <tr>
-            <th>organicUnit</th>
+            <th>Organización</th>
             <td>{data.organicUnit}</td>
           </tr>
           <tr>
-            <th className="align-middle">peopleInvolved</th>
+            <th className="align-middle">Personas involucradas</th>
             <td>
               <ul>
                 {data.peopleInvolved &&
@@ -201,15 +206,11 @@ const Details = () => {
             </td>
           </tr>
           <tr>
-            <th>relationEntity</th>
+            <th>Relación con la entidad</th>
             <td>{data.relationEntity}</td>
           </tr>
           <tr>
-            <th>ruc</th>
-            <td>{data.ruc}</td>
-          </tr>
-          <tr>
-            <th>typeInfringement</th>
+            <th>Tipo de infracción</th>
             <td>{data.typeInfringement}</td>
           </tr>
         </tbody>

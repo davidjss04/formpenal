@@ -34,75 +34,30 @@ const Table = () => {
   const columns = [
     {
       name: "id",
-      label: "id",
+      label: "Id",
     },
     {
-      name: "anonymous",
-      label: "anonymous",
-      options: {
-        customBodyRender: (value) => (
-          value ? "Yes" : "No"
-        ),
-    }
-  },
-    {
-      name: "businessName",
-      label: "businessName",
+      name: "code",
+      label: "Código de denuncia",
     },
-    // {
-    //   name: "dDni",
-    //   label: "dDni",
-    // },
-    // {
-    //   name: "dFatherLastname",
-    //   label: "dFatherLastname",
-    // },
-    // {
-    //   name: "dMotherLastname",
-    //   label: "dMotherLastname",
-    // },
-    // {
-    //   name: "dNames",
-    //   label: "dNames",
-    // },
-    // {
-    //   name: "dPhone",
-    //   label: "dPhone",
-    // },
-    // {
-    //   name: "dTypePerson",
-    //   label: "dTypePerson",
-    // },
-    // {
-    //   name: "date",
-    //   label: "date",
-    // },
-    // {
-    //   name: "detail",
-    //   label: "detail",
-    // },
-    // {
-    //   name: "email",
-    //   label: "email",
-    // },
-    // {
-    //   name: "entity",
-    //   label: "entity",
-    // },
-    // {
-    //   name: "fdate",
-    //   label: "fdate",
-    // },
+    {
+      name: "fdate",
+      label: "Fecha de registro",
+    },
+    {
+      name: "fstatus",
+      label: "Estado",
+    },
     {
       name: "files",
-      label: "files",
+      label: "Documentos",
       options: {
         customBodyRender: (filesArray) => {
           return (
             <ul>
             {filesArray.map((file, index) => (
               <li key={index}>
-                Tipo: {file.type_file}, Tamaño: {file.size_file}, Nombre: {file.name_file}, <a target="__blank" href={"http://localhost:3000/complaints/"+file.url_file}>Ver</a>
+                <strong>Tipo:</strong> {file.type_file}, <strong>Tamaño:</strong> {file.size_file}, <strong>Nombre:</strong> {file.name_file}, <a target="__blank" href={"http://localhost:3000/complaints/"+file.url_file}>Ver</a>
               </li>
             ))}
           </ul>
@@ -110,45 +65,6 @@ const Table = () => {
               },
       },
     },
-    // {
-    //   name: "fstatus",
-    //   label: "fstatus",
-    // },
-    // {
-    //   name: "lastCode",
-    //   label: "lastCode",
-    // },
-    // {
-    //   name: "organicUnit",
-    //   label: "organicUnit",
-    // },
-    {
-      name: "peopleInvolved",
-      label: "People Involved",
-      options: {
-        customBodyRender: (peopleArray) => {
-          return (
-            <ul>
-              {peopleArray.map((person, index) => (
-                <li key={index}>{person}</li>
-              ))}
-            </ul>
-          );
-        },
-      },
-    },
-    // {
-    //   name: "relationEntity",
-    //   label: "relationEntity",
-    // },
-    // {
-    //   name: "ruc",
-    //   label: "ruc",
-    // },
-    // {
-    //   name: "typeInfringement",
-    //   label: "typeInfringement",
-    // },
     {
       name: "",
       label: "",
