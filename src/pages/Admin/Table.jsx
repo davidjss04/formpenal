@@ -3,52 +3,152 @@ import MUIDataTable from "mui-datatables";
 import axios from "axios";
 
 const Table = () => {
-  const [products, setProducts] = useState([]);
-  const url = "https://fakestoreapi.com/products";
+  const [data, setData] = useState([]);
+  const url = "http://localhost:3000/complaints/";
 
   const getData = async () => {
     await axios.get(url).then((response) => {
       const data = response.data;
-      console.log(data);
-      setProducts(data);
+      setData(data);
     });
   };
-
   useEffect(() => {
     getData();
   }, []);
 
+  const handleVerClick = (id) => {
+    return id
+    // Aquí puedes realizar acciones adicionales al hacer clic en "Ver"
+  };
+
   const columns = [
     {
       name: "id",
-      label: "ID",
+      label: "id",
     },
     {
-      name: "title",
-      label: "TITLE",
-    },
-    {
-      name: "category",
-      label: "CATEGORY",
-    },
-    {
-      name: "Acciones",
-      label: "Acciones",
+      name: "anonymous",
+      label: "anonymous",
       options: {
-        customBodyRenderLite: (dataIndex) => {
-          const id = products[dataIndex].id;
-          const nombre = products[dataIndex].title;
-
+        customBodyRender: (value) => (
+          value ? "Yes" : "No"
+        ),
+    }
+  },
+    {
+      name: "businessName",
+      label: "businessName",
+    },
+    // {
+    //   name: "dDni",
+    //   label: "dDni",
+    // },
+    // {
+    //   name: "dFatherLastname",
+    //   label: "dFatherLastname",
+    // },
+    // {
+    //   name: "dMotherLastname",
+    //   label: "dMotherLastname",
+    // },
+    // {
+    //   name: "dNames",
+    //   label: "dNames",
+    // },
+    // {
+    //   name: "dPhone",
+    //   label: "dPhone",
+    // },
+    // {
+    //   name: "dTypePerson",
+    //   label: "dTypePerson",
+    // },
+    // {
+    //   name: "date",
+    //   label: "date",
+    // },
+    // {
+    //   name: "detail",
+    //   label: "detail",
+    // },
+    // {
+    //   name: "email",
+    //   label: "email",
+    // },
+    // {
+    //   name: "entity",
+    //   label: "entity",
+    // },
+    // {
+    //   name: "fdate",
+    //   label: "fdate",
+    // },
+    {
+      name: "files",
+      label: "files",
+      options: {
+        customBodyRender: (filesArray) => {
           return (
-            <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-              <li><button class="dropdown-item" type="button">Action</button></li>
-              <li><button class="dropdown-item" type="button">Another action</button></li>
-              <li><button class="dropdown-item" type="button">Something else here</button></li>
+            <ul>
+            {filesArray.map((file, index) => (
+              <li key={index}>
+                Tipo: {file.type_file}, Tamaño: {file.size_file}, Nombre: {file.name_file}, <a target="__blank" href={"http://localhost:3000/complaints/"+file.url_file}>Ver</a>
+              </li>
+            ))}
+          </ul>
+          );
+              },
+      },
+    },
+    // {
+    //   name: "fstatus",
+    //   label: "fstatus",
+    // },
+    // {
+    //   name: "lastCode",
+    //   label: "lastCode",
+    // },
+    // {
+    //   name: "organicUnit",
+    //   label: "organicUnit",
+    // },
+    {
+      name: "peopleInvolved",
+      label: "People Involved",
+      options: {
+        customBodyRender: (peopleArray) => {
+          return (
+            <ul>
+              {peopleArray.map((person, index) => (
+                <li key={index}>{person}</li>
+              ))}
             </ul>
+          );
+        },
+      },
+    },
+    // {
+    //   name: "relationEntity",
+    //   label: "relationEntity",
+    // },
+    // {
+    //   name: "ruc",
+    //   label: "ruc",
+    // },
+    // {
+    //   name: "typeInfringement",
+    //   label: "typeInfringement",
+    // },
+    {
+      name: "as",
+      label: "as",
+      options: {
+        customBodyRender: (value, tableMetaData) => {
+
+const response = handleVerClick(tableMetaData.rowData[0]);
+          return (
+            <div class="">
+         <a href={"/admin/details/"+response} target="__blank"><button type="button" class="btn btn-outline-primary">Ver Completo</button></a>
           </div>
           );
         },
@@ -63,10 +163,10 @@ const Table = () => {
 
   return (
     <div className="container-xxl">
-      {products.length > 0 ? (
+      {data.length > 0 ? (
         <MUIDataTable
           title="Denuncias"
-          data={products}
+          data={data}
           columns={columns}
           options={options}
         />
