@@ -5,10 +5,21 @@ import * as Yup from 'yup';
 import { options } from "../../data";
 import { API_URL } from "../../config";
 import axios from 'axios';
+import Modal from "../../components/Modal";
 
 function Form() {
 
   const [required, setRequired] = useState(null);
+
+  const [anonymous, setAnonymous] = useState(false);
+
+  const [confirm, setConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [accordance, setAccordance] = useState({
+    confirmation: false,
+    declaration: false,
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -38,14 +49,14 @@ function Form() {
       anonymous: Yup.string().required("Campo requerido para la denuncia"),
       email: Yup.string().email("Correo electrónico inválido").required("Campo requerido para la denuncia"),
       relationEntity: Yup.string().required("Campo requerido para la denuncia"),
-      dTypePerson: Yup.string().required("Campo requerido para la denuncia"),
-      dDni: Yup.number().required("Campo requerido para la denuncia"),
-      dMotherLastname: Yup.string().required("Campo requerido para la denuncia"),
-      dFatherLastname: Yup.string().required("Campo requerido para la denuncia"),
-      dNames: Yup.string().required("Campo requerido para la denuncia"),
-      dPhone: Yup.number().required("Campo requerido para la denuncia"),
-      ruc: required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
-      businessName: required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dTypePerson: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dDni: !anonymous ? Yup.number().required("Campo requerido para la denuncia") : Yup.number(),
+      dMotherLastname: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dFatherLastname: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dNames: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dPhone: !anonymous ? Yup.number().required("Campo requerido para la denuncia") : Yup.number(),
+      ruc: anonymous || required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      businessName: anonymous || required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
       typeInfringement: Yup.string().required("Campo requerido para la denuncia"),
       entity: Yup.string().required("Campo requerido para la denuncia"),
       organicUnit: Yup.string().required("Campo requerido para la denuncia"),
@@ -59,7 +70,10 @@ function Form() {
       }
 
       console.log("files", fileList);
+      handleShow();
 
+
+      setLoading(true);
       const data = new FormData();
       fileList.forEach((file) => {
         data.append('file', file);
@@ -77,13 +91,18 @@ function Form() {
               if (response.status === 201) {
                 console.log(response);
               }
-            });
+            }).then(() => {
+              setLoading(false);
+              setShow(false);
+            })
             return
           }
         });
       } catch (error) {
         console.log(error);
       }
+
+
     },
   });
 
@@ -98,10 +117,27 @@ function Form() {
       }
     }
 
+    if (e.target.name === "anonymous") {
+      if (e.target.value === true) {
+        setAnonymous(true);
+      }
+
+      if (e.target.value === false) {
+        setAnonymous(false);
+      }
+    }
+
     console.log(e.target.name, e.target.value);
     formik.setFieldValue(e.target.name, e.target.value);
   };
 
+  const [show, setShow] = useState(false);
+  const handleClose = () => {
+    formik.handleSubmit();
+  }
+  const handleShow = () => {
+    setShow(true);
+  }
 
   const [peopleInvolved, setPeopleInvolved] = useState({}) // [{id: "", name: "", lastname: "", relation: ""}
   const [tempData, setTempData] = useState([]);
@@ -304,6 +340,7 @@ function Form() {
               value={formik.values.typeInfringement}
               onChange={formik.handleChange}
               options={options.typeInfringement}
+              error={formik.errors.typeInfringement}
             />
             <CustomInput
               id="entity"
@@ -314,6 +351,7 @@ function Form() {
               value={formik.values.entity}
               onChange={formik.handleChange}
               options={options.entity}
+              error={formik.errors.entity}
             />
             <CustomInput
               id="organicUnit"
@@ -324,6 +362,7 @@ function Form() {
               value={formik.values.organicUnit}
               onChange={formik.handleChange}
               options={options.organicUnit}
+              error={formik.errors.organicUnit}
             />
             <CustomInput
               id="date"
@@ -333,6 +372,7 @@ function Form() {
               placeholder="digite aqui..."
               value={formik.values.date}
               onChange={formik.handleChange}
+              error={formik.errors.date}
             />
             <AlertLabel
               label="3. PERSONAS INVOLUCRADAS"
@@ -487,7 +527,11 @@ function Form() {
             </div>
             <div className="col-md-12 mb-3">
               <div className="alert alert-info hidden-sm hidden-xs text-primary text-start ">
-                <input type="checkbox" value="1" />{" "}
+                <input type="checkbox" value="true" onChange={
+                  (e) => {
+                    setAccordance({ ...accordance, confirmation: e.target.checked });
+                  }
+                } />{" "}
                 <span>
                   Conforme a lo establecido en la Ley N° 29733 - Ley de
                   Protección de Datos Personales y en el Decreto Supremo
@@ -506,7 +550,12 @@ function Form() {
                   utilización del servicio.
                 </span>
                 <br />
-                <input type="checkbox" value="1" />{" "}
+                <input type="checkbox" value="true"
+                  onChange={
+                    (e) => {
+                      setAccordance({ ...accordance, declaration: e.target.checked });
+                    }
+                  } />{" "}
                 <span>
                   Declaro bajo juramento, que los datos proporcionados son
                   verídicos y asumo las implicancias de acuerdo a Ley, en caso
@@ -515,13 +564,28 @@ function Form() {
               </div>
             </div>
             <div className="d-grid gap-2 col-2 mx-auto">
-              <button type="button" className="btn btn-primary btn-lg" onClick={formik.handleSubmit}>
+              <button type="button" className="btn btn-primary btn-lg" onClick={
+                () => {
+                  handleShow();
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+              >
                 Enviar
               </button>
             </div>
           </div>
         </div>
       </form>
+      {
+        show && (
+          <Modal
+            show={show}
+            handleClose={handleClose}
+            loading={loading}
+          />
+        )
+      }
     </div>
   );
 }
