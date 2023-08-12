@@ -65,13 +65,22 @@ function Form() {
       lastCode: Yup.string().required("Campo requerido para la denuncia"),
     }),
     onSubmit: (values) => {
+      if (!accordance.confirmation) {
+        alert("Debe aceptar la confirmación");
+        return;
+      }
+
+      if (!accordance.declaration) {
+        alert("Debe aceptar la declaración");
+        return;
+      }
+
       if (!fileList) {
         return;
       }
 
       console.log("files", fileList);
       handleShow();
-
 
       setLoading(true);
       const data = new FormData();
@@ -94,6 +103,7 @@ function Form() {
             }).then(() => {
               setLoading(false);
               setShow(false);
+              //formik.resetForm();
             })
             return
           }
@@ -101,6 +111,7 @@ function Form() {
       } catch (error) {
         console.log(error);
       }
+
 
 
     },
@@ -132,6 +143,11 @@ function Form() {
   };
 
   const [show, setShow] = useState(false);
+
+  const handleCancel = () => {
+    setShow(false);
+  }
+
   const handleClose = () => {
     formik.handleSubmit();
   }
@@ -158,6 +174,12 @@ function Form() {
   };
 
   const handleFileChange = (e) => {
+
+    if (fileList.length > 6) {
+      alert("El número máximo de archivos es 7");
+      return;
+    }
+
     if (e.target.files.length > 0) {
       e.target.files[0].size > 25000000 && alert("El tamaño máximo del archivo debe ser menor o igual a 25MB");
     }
@@ -583,6 +605,7 @@ function Form() {
             show={show}
             handleClose={handleClose}
             loading={loading}
+            handleCancel={handleCancel}
           />
         )
       }

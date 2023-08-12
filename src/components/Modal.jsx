@@ -6,6 +6,7 @@ function ModalCustom(
     {
         show,
         handleClose,
+        handleCancel,
         loading,
     }
 ) {
@@ -17,7 +18,7 @@ function ModalCustom(
     return (
         <>
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>CONFIRMAR CAMBIOS</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -34,11 +35,11 @@ function ModalCustom(
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
+                    <Button variant="secondary" onClick={handleCancel}>
+                        CANCELAR
                     </Button>
                     <Button variant="primary" onClick={handleClose}>
-                        Save Changes
+                        CONFIRMAR
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -49,12 +50,14 @@ function ModalCustom(
 ModalCustom.propTypes = {
     show: propTypes.bool.isRequired,
     handleClose: propTypes.func.isRequired,
+    handleCancel: propTypes.func.isRequired,
     loading: propTypes.bool.isRequired,
 }
 
 ModalCustom.defaultProps = {
     show: false,
     handleClose: () => { },
+    handleCancel: () => { },
     loading: false,
 }
 
