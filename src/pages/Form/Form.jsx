@@ -11,15 +11,15 @@ function Form() {
 
   const [required, setRequired] = useState(null);
 
-  const [anonymous, setAnonymous] = useState(false);
-
-  const [confirm, setConfirm] = useState(false);
+  
   const [loading, setLoading] = useState(false);
 
   const [accordance, setAccordance] = useState({
     confirmation: false,
     declaration: false,
   });
+
+  const [anonymouss, setAnonymous] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -49,14 +49,14 @@ function Form() {
       anonymous: Yup.string().required("Campo requerido para la denuncia"),
       email: Yup.string().email("Correo electrónico inválido").required("Campo requerido para la denuncia"),
       relationEntity: Yup.string().required("Campo requerido para la denuncia"),
-      dTypePerson: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
-      dDni: !anonymous ? Yup.number().required("Campo requerido para la denuncia") : Yup.number(),
-      dMotherLastname: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
-      dFatherLastname: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
-      dNames: !anonymous ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
-      dPhone: !anonymous ? Yup.number().required("Campo requerido para la denuncia") : Yup.number(),
-      ruc: anonymous || required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
-      businessName: anonymous || required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dTypePerson: anonymouss === "false" ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dDni: anonymouss === "false" ? Yup.number().required("Campo requerido para la denuncia") : Yup.number(),
+      dMotherLastname: anonymouss === "false" ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dFatherLastname: anonymouss === "false" ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dNames: anonymouss === "false" ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      dPhone: anonymouss === "false" ? Yup.number().required("Campo requerido para la denuncia") : Yup.number(),
+      ruc: (anonymouss === "false") && required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
+      businessName: (anonymouss === "false") && required ? Yup.string().required("Campo requerido para la denuncia") : Yup.string(),
       typeInfringement: Yup.string().required("Campo requerido para la denuncia"),
       entity: Yup.string().required("Campo requerido para la denuncia"),
       organicUnit: Yup.string().required("Campo requerido para la denuncia"),
@@ -65,6 +65,9 @@ function Form() {
       lastCode: Yup.string().required("Campo requerido para la denuncia"),
     }),
     onSubmit: (values) => {
+
+      console.log("values", values);
+
       if (!accordance.confirmation) {
         alert("Debe aceptar la confirmación");
         return;
@@ -103,7 +106,7 @@ function Form() {
             }).then(() => {
               setLoading(false);
               setShow(false);
-              //formik.resetForm();
+              formik.resetForm();
             })
             return
           }
@@ -111,8 +114,6 @@ function Form() {
       } catch (error) {
         console.log(error);
       }
-
-
 
     },
   });
@@ -129,13 +130,9 @@ function Form() {
     }
 
     if (e.target.name === "anonymous") {
-      if (e.target.value === true) {
-        setAnonymous(true);
-      }
-
-      if (e.target.value === false) {
-        setAnonymous(false);
-      }
+      console.log("entro al if anonymus");
+      formik.resetForm();
+      setAnonymous(e.target.value);
     }
 
     console.log(e.target.name, e.target.value);
@@ -195,12 +192,12 @@ function Form() {
   }
 
   return (
-    <div className="container">
-      <div className="row h-auto">
-        <div className="col align-items-center">
+    <div className="container p-3">
+ {/*      <div className="row h-auto">
+        <div className="col align-items-center text-center">
           <h3>LOGO</h3>
         </div>
-      </div>
+      </div> */}
       <form className="card-body mb-3 text-center" onSubmit={formik.handleSubmit}>
         <div className="row h-auto border">
           <div className="border p-3 bg-body-secondary">
@@ -430,7 +427,7 @@ function Form() {
             <button
               type="button"
               onClick={handleAddTempData}
-              className="btn btn-secondary"
+              className="btn btn-primary btn-lg"
             >
               Agregar +
             </button>
@@ -548,7 +545,7 @@ function Form() {
               </table>
             </div>
             <div className="col-md-12 mb-3">
-              <div className="alert alert-info hidden-sm hidden-xs text-primary text-start ">
+              <div className="alert alert-primary hidden-sm hidden-xs text-primary text-start">
                 <input type="checkbox" value="true" onChange={
                   (e) => {
                     setAccordance({ ...accordance, confirmation: e.target.checked });
@@ -586,7 +583,7 @@ function Form() {
               </div>
             </div>
             <div className="d-grid gap-2 col-2 mx-auto">
-              <button type="button" className="btn btn-primary btn-lg" onClick={
+              <button type="button" className="btn btn-success btn-lg" onClick={
                 () => {
                   handleShow();
                 }}

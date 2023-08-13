@@ -8,9 +8,9 @@ const AlertLabel = ({
   onChange,
 }) => {
   return (
-    <div className="alert alert-info text-start">
+    <div className="alert alert-dark text-start">
       <strong
-        className="text-success-emphasis fw-bold pb-1"
+        className="fw-bold pb-1"
         htmlFor="name"
       >
         {label}
