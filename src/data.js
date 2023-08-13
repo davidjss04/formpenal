@@ -36,13 +36,29 @@ const options = {
     ],
 
     organicUnit: [
-        { value: "1", label: "Opción 1" },
-        { value: "2", label: "Opción 2" },
+        { value: "Gerencia_Planificacion", label: "Gerencia de Planificación y Desarrollo" },
+        { value: "Gerencia_RRHH", label: "Gerencia de Recursos Humanos" },
+        { value: "Gerencia_Finanzas", label: "Gerencia de Finanzas y Presupuesto" },
+        { value: "Gerencia_TIC", label: "Gerencia de Tecnología de la Información" },
+        { value: "Gerencia_Relaciones", label: "Gerencia de Relaciones Externas" },
+        { value: "Oficina_Legal", label: "Oficina de Asuntos Legales" },
+        { value: "Oficina_Comunicacion", label: "Oficina de Comunicación Institucional" },
+        { value: "Oficina_Auditoria", label: "Oficina de Auditoría Interna" },
+        { value: "Oficina_Planificacion", label: "Oficina de Planificación Estratégica" },
+        { value: "Oficina_Control", label: "Oficina de Control y Evaluación de Proyectos" },
     ],
 
     iRelation: [
-        { value: "1", label: "Opción 1" },
-        { value: "2", label: "Opción 2" },
+        { value: "Cliente", label: "Cliente" },
+        { value: "Proveedor", label: "Proveedor" },
+        { value: "Socio_Comercial", label: "Socio Comercial" },
+        { value: "Competidor", label: "Competidor" },
+        { value: "Inversionista", label: "Inversionista" },
+        { value: "Contratista", label: "Contratista" },
+        { value: "Colaborador", label: "Colaborador" },
+        { value: "Distribuidor", label: "Distribuidor" },
+        { value: "Afiliado", label: "Afiliado" },
+        { value: "Regulador_Gobierno", label: "Regulador/Gobierno" },
     ],
 }
 
