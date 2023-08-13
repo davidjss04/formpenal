@@ -200,7 +200,19 @@ const Details = () => {
               <ul>
                 {data.peopleInvolved &&
                   data.peopleInvolved.map((element, index) => (
-                    <li key={index}>{element}</li>
+                    <li key={index}>
+                      <strong>Nombres:</strong> {element.iNames},{" "}
+                      <strong>Apellidos:</strong> {element.iLastname},{" "}
+                      <strong>Relación:</strong> {element.iRelation},{" "}
+                      <a
+                        href={
+                          "http://localhost:3000/complaints/" + element.url_file
+                        }
+                        target="__blank"
+                      >
+                        Ver
+                      </a>
+                    </li>
                   ))}
               </ul>
             </td>
