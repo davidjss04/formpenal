@@ -152,7 +152,7 @@ const Details = () => {
             <td>
               <div className="d-flex gap-2">
                 <select
-                  class="form-select"
+                  className="form-select"
                   aria-label="Disabled select example"
                   value={fstatus}
                   onChange={handleInputChange}
@@ -178,7 +178,7 @@ const Details = () => {
                 </button>
                 <button
                   type="button"
-                  class="btn btn-primary"
+                  className="btn btn-primary"
                   onClick={handleSaveClick}
                 >
                   Guardar

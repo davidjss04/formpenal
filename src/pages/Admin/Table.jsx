@@ -73,9 +73,9 @@ const Table = () => {
 
 const response = handleVerClick(tableMetaData.rowData[0]);
           return (
-            <div class="d-flex gap-2">
-         <a href={"/admin/details/"+response} target="__blank"><button type="button" class="btn btn-outline-primary">Ver</button></a>
-         <a onClick={()=>deleteComplaint(response)} target="__blank"><button type="button" class="btn btn-outline-danger">Eliminar</button></a>
+            <div className="d-flex gap-2">
+         <a href={"/admin/details/"+response} target="__blank"><button type="button" className="btn btn-outline-primary">Ver</button></a>
+         <a onClick={()=>deleteComplaint(response)} target="__blank"><button type="button" className="btn btn-outline-danger">Eliminar</button></a>
           </div>
           );
         },
