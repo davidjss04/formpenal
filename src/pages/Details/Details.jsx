@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { API_URL } from "../../config";
 
 const cookies = new Cookies();
 
@@ -17,9 +18,9 @@ const Details = () => {
   const [fstatus, setFstatus] = useState("");
 
   const { id } = useParams();
-  const url = `http://localhost:3000/complaints/details?id=${id}`;
-  const urlUpdate = `http://localhost:3000/complaints/update`;
-
+  const url = `${API_URL}/complaints/details?id=${id}`;
+  const urlUpdate = `${API_URL}/complaints/update`;
+console.log(url)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -132,7 +133,7 @@ const Details = () => {
                       <strong>Nombre:</strong> {element.name_file},{" "}
                       <a
                         href={
-                          "http://localhost:3000/complaints/" + element.url_file
+                          `${API_URL}/complaints/` + element.url_file
                         }
                         target="__blank"
                       >
@@ -161,11 +162,11 @@ const Details = () => {
                   <option value={fstatus} selected>
                     {fstatus}
                   </option>
-                  {fstatus == "pendiente" && (
-                    <option value="aceptado">aceptado</option>
+                  {fstatus == "PENDIENTE" && (
+                    <option value="APROBADO">APROBADO</option>
                   )}
-                  {fstatus == "aceptado" && (
-                    <option value="pendiente">pendiente</option>
+                  {fstatus == "APROBADO" && (
+                    <option value="PENDIENTE">PENDIENTE</option>
                   )}
                 </select>
 
@@ -204,14 +205,6 @@ const Details = () => {
                       <strong>Nombres:</strong> {element.iNames},{" "}
                       <strong>Apellidos:</strong> {element.iLastname},{" "}
                       <strong>Relación:</strong> {element.iRelation},{" "}
-                      <a
-                        href={
-                          "http://localhost:3000/complaints/" + element.url_file
-                        }
-                        target="__blank"
-                      >
-                        Ver
-                      </a>
                     </li>
                   ))}
               </ul>
