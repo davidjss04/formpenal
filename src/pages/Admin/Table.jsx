@@ -6,6 +6,8 @@ const Table = () => {
   const [data, setData] = useState([]);
   const url = "http://localhost:3000/complaints/";
   const urlDelete = "http://localhost:3000/complaints/delete/";
+  const urlDeleteFile =
+    "http://localhost:3000/complaints/file/delete?fileName=";
 
   const getData = async () => {
     await axios.get(url).then((response) => {
@@ -18,18 +20,38 @@ const Table = () => {
   }, []);
 
   const handleVerClick = (id) => {
-    return id
+    return id;
   };
 
-  const deleteComplaint = async (id)=>{
-    await axios.get(urlDelete+`?id=${id}`).then((response) => {
-      // const data = response.data;
-      alert("eliminado")
-      const updatedData = data.filter(item => item.id !== id);
-      setData(updatedData);
+  const deleteComplaint = async (id, nameFile) => {
+    try {
+      await axios.get(urlDelete + `?id=${id}`).then((response) => {
+        console.log(response);
+        if (response.status === 200) {
+          console.log("response daa", response.data);
 
-    });
-  }
+          alert("eliminado");
+          const updatedData = data.filter((item) => item.id !== id);
+          setData(updatedData);
+
+          nameFile.map(async (data) => {
+            // console.log(data.name_file)
+            await axios
+              .get(urlDeleteFile + `${data.url_file}`)
+              .then((response) => {
+                if (response.status === 200) {
+                  console.log(response);
+                }
+              })
+              .then(() => {});
+          });
+          return;
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const columns = [
     {
@@ -55,14 +77,22 @@ const Table = () => {
         customBodyRender: (filesArray) => {
           return (
             <ul>
-            {filesArray.map((file, index) => (
-              <li key={index}>
-                <strong>Tipo:</strong> {file.type_file}, <strong>Tamaño:</strong> {file.size_file}, <strong>Nombre:</strong> {file.name_file}, <a target="__blank" href={"http://localhost:3000/complaints/"+file.url_file}>Ver</a>
-              </li>
-            ))}
-          </ul>
+              {filesArray.map((file, index) => (
+                <li key={index}>
+                  <strong>Tipo:</strong> {file.type_file},{" "}
+                  <strong>Tamaño:</strong> {file.size_file},{" "}
+                  <strong>Nombre:</strong> {file.name_file},{" "}
+                  <a
+                    target="__blank"
+                    href={"http://localhost:3000/complaints/" + file.url_file}
+                  >
+                    Ver
+                  </a>
+                </li>
+              ))}
+            </ul>
           );
-              },
+        },
       },
     },
     {
@@ -70,13 +100,24 @@ const Table = () => {
       label: "",
       options: {
         customBodyRender: (value, tableMetaData) => {
-
-const response = handleVerClick(tableMetaData.rowData[0]);
+          const response = handleVerClick(tableMetaData.rowData[0]);
+          const responseFile = handleVerClick(tableMetaData.rowData[4]);
           return (
             <div className="d-flex gap-2">
-         <a href={"/admin/details/"+response} target="__blank"><button type="button" className="btn btn-outline-primary">Ver</button></a>
-         <a onClick={()=>deleteComplaint(response)} target="__blank"><button type="button" className="btn btn-outline-danger">Eliminar</button></a>
-          </div>
+              <a href={"/admin/details/" + response} target="__blank">
+                <button type="button" className="btn btn-outline-primary">
+                  Ver
+                </button>
+              </a>
+              <a
+                onClick={() => deleteComplaint(response, responseFile)}
+                target="__blank"
+              >
+                <button type="button" className="btn btn-outline-danger">
+                  Eliminar
+                </button>
+              </a>
+            </div>
           );
         },
       },
@@ -84,9 +125,9 @@ const response = handleVerClick(tableMetaData.rowData[0]);
   ];
 
   const options = {
-    filterType: 'checkbox', // Puedes ajustar esto según tus necesidades
-    responsive: 'standard', // O 'vertical', dependiendo de tus preferencias
-    selectableRows: 'none', // Deshabilita la selección de filas
+    filterType: "checkbox", // Puedes ajustar esto según tus necesidades
+    responsive: "standard", // O 'vertical', dependiendo de tus preferencias
+    selectableRows: "none", // Deshabilita la selección de filas
     download: false, // Deshabilita las opciones de descarga
     print: false, // Deshabilita las opciones de impresión
     viewColumns: false, // Oculta el menú de selección de columnas
