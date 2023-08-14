@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
 import axios from "axios";
+import { API_URL } from "../../config";
 
 const Table = () => {
   const [data, setData] = useState([]);
-  const url = "http://localhost:3000/complaints/";
-  const urlDelete = "http://localhost:3000/complaints/delete/";
-  const urlDeleteFile =
-    "http://localhost:3000/complaints/file/delete?fileName=";
+  const url = `${API_URL}/complaints/`;
+  const urlDelete = `${API_URL}/complaints/delete/`;
+  const urlDeleteFile =`${API_URL}/complaints/file/delete?fileName=`;
 
   const getData = async () => {
     await axios.get(url).then((response) => {
@@ -84,7 +84,7 @@ const Table = () => {
                   <strong>Nombre:</strong> {file.name_file},{" "}
                   <a
                     target="__blank"
-                    href={"http://localhost:3000/complaints/" + file.url_file}
+                    href={`${API_URL}/complaints/` + file.url_file}
                   >
                     Ver
                   </a>
