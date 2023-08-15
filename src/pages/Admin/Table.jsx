@@ -37,7 +37,7 @@ const Table = () => {
           nameFile.map(async (data) => {
             // console.log(data.name_file)
             await axios
-              .get(urlDeleteFile + `${data.url_file}`)
+              .get(urlDeleteFile + `${data.name_file}`)
               .then((response) => {
                 if (response.status === 200) {
                   console.log(response);
