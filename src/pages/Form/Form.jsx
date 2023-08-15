@@ -21,6 +21,13 @@ function Form() {
 
   const [anonymouss, setAnonymous] = useState("");
 
+  const currentDate = new Date();
+        
+  const day = currentDate.getDate().toString().padStart(2, '0');
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Enero es 0
+  const year = currentDate.getFullYear();
+  const formattedDate = `${day}-${month}-${year}`;
+
   const formik = useFormik({
     initialValues: {
       anonymous: "false", // "true" or "false
@@ -42,9 +49,9 @@ function Form() {
       peopleInvolved: [],
       detail: "",
       lastCode: "",
-      fdate: "",
+      fdate: formattedDate,
       files: [],
-      fstatus: "pendiente",
+      fstatus: "PENDIENTE",
     },
     validationSchema: Yup.object().shape({
       anonymous: Yup.string().required("Campo requerido para la denuncia"),
