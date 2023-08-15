@@ -26,11 +26,11 @@ function Form() {
   const day = currentDate.getDate().toString().padStart(2, '0');
   const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Enero es 0
   const year = currentDate.getFullYear();
-  const formattedDate = `${day}-${month}-${year}`;
+  const formattedDate = `${year}-${month}-${day}`;
 
   const formik = useFormik({
     initialValues: {
-      anonymous: "false", // "true" or "false
+      anonymous: false, // "true" or "false
       ruc: "",
       businessName: "",
       code: "",
