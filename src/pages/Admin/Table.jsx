@@ -84,7 +84,7 @@ const Table = () => {
                   <strong>Nombre:</strong> {file.name_file},{" "}
                   <a
                     target="__blank"
-                    href={file.url_file}
+                    href={`` + file.url_file}
                   >
                     Ver
                   </a>
