@@ -11,18 +11,22 @@ function Form() {
 
   const [required, setRequired] = useState(null);
 
-  
+
   const [loading, setLoading] = useState(false);
 
   const [accordance, setAccordance] = useState({
     confirmation: false,
     declaration: false,
   });
+  const [peopleInvolved, setPeopleInvolved] = useState({}) // [{id: "", name: "", lastname: "", relation: ""}
+  const [tempData, setTempData] = useState([]);
+  const [fileList, setFileList] = useState([]);
+  const files = fileList ? [...fileList] : [];
 
-  const [anonymouss, setAnonymous] = useState("");
+  const [anonymouss, setAnonymous] = useState("false");
 
   const currentDate = new Date();
-        
+
   const day = currentDate.getDate().toString().padStart(2, '0');
   const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Enero es 0
   const year = currentDate.getFullYear();
@@ -30,7 +34,7 @@ function Form() {
 
   const formik = useFormik({
     initialValues: {
-      anonymous: false, // "true" or "false
+      anonymous: "false", // "true" or "false
       ruc: "",
       businessName: "",
       code: "",
@@ -70,7 +74,9 @@ function Form() {
       organicUnit: Yup.string().required("Campo requerido para la denuncia"),
       date: Yup.string().required("Campo requerido para la denuncia"),
       detail: Yup.string().required("Campo requerido para la denuncia"),
-      lastCode: Yup.string().required("Campo requerido para la denuncia"),
+      lastCode: Yup.number()
+        .typeError('Debe ser un número')
+        .min(0, "Debe ser mayor o igual a 0"),
     }),
     onSubmit: (values) => {
 
@@ -112,6 +118,7 @@ function Form() {
                 console.log(response);
               }
             }).then(() => {
+              fileList.splice(0, fileList.length);
               setLoading(false);
               setShow(false);
               formik.resetForm();
@@ -160,10 +167,6 @@ function Form() {
     setShow(true);
   }
 
-  const [peopleInvolved, setPeopleInvolved] = useState({}) // [{id: "", name: "", lastname: "", relation: ""}
-  const [tempData, setTempData] = useState([]);
-  const [fileList, setFileList] = useState([]);
-  const files = fileList ? [...fileList] : [];
 
   const handleAddTempData = () => {
     const newData = { ...peopleInvolved };
@@ -180,8 +183,8 @@ function Form() {
 
   const handleFileChange = (e) => {
 
-    if (fileList.length > 6) {
-      alert("El número máximo de archivos es 7");
+    if (fileList.length > 2) {
+      alert("El número máximo de archivos es 3");
       return;
     }
 
@@ -201,7 +204,7 @@ function Form() {
 
   return (
     <div className="container p-3">
- {/*      <div className="row h-auto">
+      {/*      <div className="row h-auto">
         <div className="col align-items-center text-center">
           <h3>LOGO</h3>
         </div>
@@ -234,7 +237,7 @@ function Form() {
               error={formik.errors.email}
             />
 
-            {formik.values.anonymous === "true" && (
+            {anonymouss === "true" && (
               <div className="p-3 text-start text-danger">
                 <li className="">
                   El uso de este correo electrónico es sólo para notificaciones
@@ -262,7 +265,7 @@ function Form() {
               options={options.relationEntity}
               error={formik.errors.relationEntity}
             />
-            {formik.values.anonymous === "false" && (
+            {anonymouss === "false" && (
               <>
                 <AlertLabel
                   label="1. DATOS DEL DENUNCIANTE (en caso no haya seleccionado la opcion de anónimo)"

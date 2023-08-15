@@ -1,5 +1,6 @@
 import Table from "./Table"
 import Cookies from "universal-cookie";
+import { Link } from "react-router-dom";
 
 const cookies = new Cookies();
 
@@ -16,9 +17,28 @@ const Admin = () => {
 
   return (
     <div className="pb-4">
-      <header className="bg-info mb-4 d-flex px-3 justify-content-between"><h3>PANEL DE ADMINSITRADOR</h3> <button className="r" onClick={()=>exit()}>salir</button></header>
-    <Table />
-    </div>
+      <nav className="navbar navbar-light" style={
+        {
+          backgroundColor: "#e3f2fd",
+        }
+      }>
+        <div className="container-fluid">
+          <Link to="/" className="navbar-brand">HOME</Link>
+          <h2
+            className="d-flex justify-content-center"
+          >
+            <h2>--------------- PANEL ADMINISTRATIVO ---------------</h2>
+          </h2>
+          <form className="d-flex">
+            <button className="btn btn-outline-success" type="submit" onClick={() => exit()}>
+              SALIR
+            </button>
+          </form>
+        </div>
+      </nav>
+
+      <Table />
+    </div >
   )
 }
 export default Admin
