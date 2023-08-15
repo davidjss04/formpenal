@@ -132,9 +132,7 @@ console.log(url)
                       <strong>Tamaño:</strong> {element.size_file},{" "}
                       <strong>Nombre:</strong> {element.name_file},{" "}
                       <a
-                        href={
-                          `${API_URL}/complaints/` + element.url_file
-                        }
+                        href={element.url_file}
                         target="__blank"
                       >
                         Ver
