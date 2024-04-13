@@ -146,8 +146,9 @@ function Form() {
 
     if (e.target.name === "anonymous") {
       console.log("entro al if anonymus");
+      let anonymousTemp = e.target.value;
       formik.resetForm();
-      setAnonymous(e.target.value);
+      setAnonymous(anonymousTemp);
     }
 
     console.log(e.target.name, e.target.value);
