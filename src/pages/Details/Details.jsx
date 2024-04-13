@@ -75,7 +75,7 @@ console.log(url)
         <tbody>
           <tr>
             <th>Denuncia anónima</th>
-            <td>{data.anonymous ? "Sí" : "No"}</td> 
+            <td>{data.anonymous === "true" ? "Sí" : "No"}</td> 
           </tr>
           <tr>
             <th>Ruc</th>
